@@ -1,7 +1,7 @@
 #!/usr/bin/bash
-#SBATCH -t 00:30:00
-#SBATCH --mem=1G
-#SBATCH --cpus-per-task=1
+#SBATCH -t 05:00:00
+#SBATCH --mem=2G
+#SBATCH --cpus-per-task=8
 #SBATCH --cluster genius
 #SBATCH -A lp_labepi
 #SBATCH -o %j.o
@@ -9,13 +9,17 @@
 
 tsv_folder=allc
 
-for tsv_file in "$tsv_folder"/*.tsv.gz; do
-  gzip -t "$tsv_file"
+export tsv_folder
 
-  if [ $? -ne 0 ]; then
-    echo "Problematic file: $tsv_file"
-  fi
-done
+check_gzip() {
+    gzip -t "$1"
+    if [ $? -ne 0 ]; then
+        echo "Problematic file: $1"
+    fi
+}
+
+export -f check_gzip
+
+find "$tsv_folder" -name "*.tsv.gz" | parallel -j 8 check_gzip
 
 echo "tsv.gz check done."
-

@@ -6,7 +6,7 @@ def main(input_bam, output_bed_gz, frag_summary_tsv):
     inbam = pysam.AlignmentFile(input_bam, "rb")
     read_buffer = {}
     out = gzip.open(output_bed_gz, "wt")
-    frag_min, frag_max = 20, 500
+    frag_min, frag_max = 1, 500
     frag_counts = {size: 0 for size in range(frag_min, frag_max+1)}
     for read in inbam.fetch(until_eof=True):
         if not read.is_paired or read.is_unmapped or read.mate_is_unmapped:
@@ -38,20 +38,6 @@ def main(input_bam, output_bed_gz, frag_summary_tsv):
                 continue
 
             frag_size = end - start
-
-            #dovetail = False
-            #r1_start, r1_end = read1.reference_start, read1.reference_end
-            #r2_start, r2_end = read2.reference_start, read2.reference_end
-            #if not read1.is_reverse and read2.is_reverse:
-            #    if (r2_end < r1_end) or (r2_start < r1_start):
-            #        dovetail = True
-            #elif read1.is_reverse and not read2.is_reverse:
-            #    if (r1_end < r2_end) or (r1_start < r2_start):
-            #        dovetail = True
-            #if dovetail:
-            #    overlap_start = max(r1_start, r2_start)
-            #    overlap_end = min(r1_end, r2_end)
-            #    frag_size = overlap_end - overlap_start
 
             # bed file
             out.write(f"{chrom}\t{start}\t{end}\t{strand}\t{frag_size}\n")

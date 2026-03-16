@@ -69,7 +69,7 @@ def merge_fastq_files(input_dir, output_dir, num_cores):
         
         for read_type in ["I1", "I2", "R1", "R2"]:
             if read_type in file_groups[prefix]:
-                input_files = file_groups[prefix][read_type]
+                input_files = sorted(file_groups[prefix][read_type])
                 tasks.append((prefix, read_type, input_files, output_dir, s_num))
 
     with ProcessPoolExecutor(max_workers=num_cores) as executor:

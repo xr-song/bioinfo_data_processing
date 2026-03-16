@@ -19,5 +19,7 @@ ls "${rawdatadir}"/*R1* \
 
       cat \"\${prefix}\"*R1*.fastq.gz > \"\$catdatadir/\${id}_R1_001.fastq.gz\"
       cat \"\${prefix}\"*R2*.fastq.gz > \"\$catdatadir/\${id}_R2_001.fastq.gz\"
-    "
+      cat \"\${prefix}\"*I1*.fastq.gz > \"\$catdatadir/\${id}_I1_001.fastq.gz\"
+      cat \"\${prefix}\"*I2*.fastq.gz > \"\$catdatadir/\${id}_I2_001.fastq.gz\"
+  "
 

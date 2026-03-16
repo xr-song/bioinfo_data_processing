@@ -18,7 +18,7 @@ def setup_logging(log_file='tss_methylation.log'):
     )
 
 def load_pseudobulk_allc(allc_file):
-    logging.info(f"Loading pseudobulk ALLC file: {allc_file}")
+    logging.info(f"Loading ALLC file: {allc_file}")
     
     allc_data = {}
     line_count = 0
@@ -47,7 +47,7 @@ def load_pseudobulk_allc(allc_file):
                 
                 allc_data[(chr_name, pos)] = (methylated, covered)
     
-    logging.info(f"Loaded {len(allc_data):,} positions from pseudobulk ALLC")
+    logging.info(f"Loaded {len(allc_data):,} positions from ALLC")
     return allc_data
 
 def compute_tss_methylation(tss_bed_file, allc_data, range_around_tss=None):
@@ -147,4 +147,4 @@ if __name__ == "__main__":
     parser.add_argument('--range_end', type=int, default=1000, help='End of range around TSS (default: 1000)')
 
     args = parser.parse_args()
-    main(args.pseudobulk_allc, args.tss_bed_file, args.output_file, args.range_start, args.range_end)
+    main(args.allc, args.tss_bed_file, args.output_file, args.range_start, args.range_end)

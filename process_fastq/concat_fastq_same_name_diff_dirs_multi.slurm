@@ -1,6 +1,6 @@
 #!/usr/bin/bash
-#SBATCH -t 02:00:00
-#SBATCH --mem=10G
+#SBATCH -t 01:00:00
+#SBATCH --mem=20G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=6
 #SBATCH --cluster wice
@@ -9,8 +9,8 @@
 #SBATCH -o %j.o
 #SBATCH -e %j.e
 
-dir1=
-dir2=
-dir3=
-
-sh /staging/leuven/stg_00064/Xinran/repo/bioinfo_data_processing/process_fastq/concat_fastq_same_name_diff_dirs_multi.sh $dir1 $dir2 $dir3
+dir1=part1
+dir2=part2
+dir3=part3
+export PATH=/staging/leuven/stg_00064/Xinran/sw/miniconda3/envs/myenv/bin:$PATH
+python concat_fastq_same_name_diff_dirs_multi.py $dir1 $dir2 $dir3

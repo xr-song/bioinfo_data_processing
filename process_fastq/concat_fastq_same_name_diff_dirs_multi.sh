@@ -28,34 +28,47 @@ for i in "${!input_dirs[@]}"; do
 done
 
 # process each sample
+export log_dir="${output_dir}/logs"
+mkdir -p "$log_dir"
+
 echo "$all_samples" | parallel -j 6 '
     sample={}
     echo "Processing: $sample"
-    
-    # collect all R1 files for this sample
-    r1_files=""
-    r2_files=""
-    i1_files=""
-    i2_files=""
-    
-    for dir in '"${input_dirs[*]}"'; do
-        r1_found=$(find "$dir" -name "${sample}*R1*.fastq.gz" 2>/dev/null)
-        r2_found=$(find "$dir" -name "${sample}*R2*.fastq.gz" 2>/dev/null)
-	i1_found=$(find "$dir" -name "${sample}*I1*.fastq.gz" 2>/dev/null)
-	i2_found=$(find "$dir" -name "${sample}*I2*.fastq.gz" 2>/dev/null)
-        
-        [ -n "$r1_found" ] && r1_files="$r1_files $r1_found"
-        [ -n "$r2_found" ] && r2_files="$r2_files $r2_found"
-	[ -n "$i1_found" ] && i1_files="$i1_files $i1_found"
-	[ -n "$i2_found" ] && i2_files="$i2_files $i2_found"
-    done
-    
-    # concatenate files
-    [ -n "$r1_files" ] && cat $r1_files > "${output_dir}/${sample}_R1_001.fastq.gz"
-    [ -n "$r2_files" ] && cat $r2_files > "${output_dir}/${sample}_R2_001.fastq.gz"
-    [ -n "$i1_files" ] && cat $i1_files > "${output_dir}/${sample}_I1_001.fastq.gz"
-    [ -n "$i2_files" ] && cat $i2_files > "${output_dir}/${sample}_I2_001.fastq.gz"
+    log_file=${log_dir}/${sample}.log
 
+    # Collect all files for each read type (and sort by filename for consistency)
+    r1_files=$(for dir in '"${input_dirs[*]}"'; do find "$dir" -name "${sample}*R1*.fastq.gz" 2>/dev/null; done | sort)
+    r2_files=$(for dir in '"${input_dirs[*]}"'; do find "$dir" -name "${sample}*R2*.fastq.gz" 2>/dev/null; done | sort)
+    i1_files=$(for dir in '"${input_dirs[*]}"'; do find "$dir" -name "${sample}*I1*.fastq.gz" 2>/dev/null; done | sort)
+    i2_files=$(for dir in '"${input_dirs[*]}"'; do find "$dir" -name "${sample}*I2*.fastq.gz" 2>/dev/null; done | sort)
+
+    # Merge, log file order
+    if [ -n "$r1_files" ]; then
+        echo "Merging R1 to ${output_dir}/${sample}_R1_001.fastq.gz" > "$log_file"
+        echo "R1 files:" >> "$log_file"
+        echo "$r1_files" >> "$log_file"
+        cat $r1_files > "${output_dir}/${sample}_R1_001.fastq.gz"
+    fi
+
+    if [ -n "$r2_files" ]; then
+        echo "Merging R2 to ${output_dir}/${sample}_R2_001.fastq.gz" >> "$log_file"
+        echo "R2 files:" >> "$log_file"
+        echo "$r2_files" >> "$log_file"
+        cat $r2_files > "${output_dir}/${sample}_R2_001.fastq.gz"
+    fi
+
+    if [ -n "$i1_files" ]; then
+        echo "Merging I1 to ${output_dir}/${sample}_I1_001.fastq.gz" >> "$log_file"
+        echo "I1 files:" >> "$log_file"
+        echo "$i1_files" >> "$log_file"
+        cat $i1_files > "${output_dir}/${sample}_I1_001.fastq.gz"
+    fi
+
+    if [ -n "$i2_files" ]; then
+        echo "Merging I2 to ${output_dir}/${sample}_I2_001.fastq.gz" >> "$log_file"
+        echo "I2 files:" >> "$log_file"
+        echo "$i2_files" >> "$log_file"
+        cat $i2_files > "${output_dir}/${sample}_I2_001.fastq.gz"
+    fi
 '
-
 echo "Done! Check results in: $output_dir"
