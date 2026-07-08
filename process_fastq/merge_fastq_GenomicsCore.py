@@ -47,13 +47,13 @@ def merge_fastq_files(input_dir, output_dir, num_cores):
 
         prefix = filename.split("-")[0]
 
-        if "_I1_" in filename:
+        if "I1" in filename:
             read_type = "I1"
-        elif "_I2_" in filename:
+        elif "I2" in filename:
             read_type = "I2"
-        elif "_R1_" in filename:
+        elif "R1" in filename:
             read_type = "R1"
-        elif "_R2_" in filename:
+        elif "R2" in filename:
             read_type = "R2"
         else:
             print(f"Warning: Cannot determine read type for {filename}, skipping...")
